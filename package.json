@@ -22,6 +22,7 @@
     "adonis-lucid": "^3.0.16",
     "adonis-middleware": "^1.0.14",
     "adonis-websocket": "^1.0.4",
+    "mysql": "^2.14.1",
     "youch": "^2.0.5"
   },
   "standard": {
