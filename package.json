@@ -22,7 +22,13 @@
     "adonis-lucid": "^3.0.16",
     "adonis-middleware": "^1.0.14",
     "adonis-websocket": "^1.0.4",
+    "babelify": "^7.3.0",
+    "browserify": "^14.4.0",
+    "gulp": "^3.9.1",
     "mysql": "^2.14.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "vinyl-source-stream": "^1.1.0",
     "youch": "^2.0.5"
   },
   "standard": {
