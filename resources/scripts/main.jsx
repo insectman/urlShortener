@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 
 
 ReactDOM.render(
-  <h1>Hello, world!</h1>,
+	<div className="main-content">
+		<h1>Hello, world!</h1>
+	</div>,
   document.getElementById('root')
 );
