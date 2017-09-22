@@ -6,7 +6,9 @@ class SiteController {
 
 	* index (request, response) {
 
-		yield response.sendView('home');
+		const csrf = request.csrfToken();
+
+		yield response.sendView('home', {csrf});
 		return;
 
 	}

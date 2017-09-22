@@ -9,9 +9,3 @@ UrlpairHelper.delayedDeletion = function(urlpairId) {
 	return;
 
 }
-
-UrlpairHelper.validateUrl = function(urlString) {
-
-	return;
-
-}

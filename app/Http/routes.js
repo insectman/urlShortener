@@ -17,8 +17,8 @@
 
 const Route = use('Route')
 
-Route.any('/', 'SiteController.index')
+Route.get('/', 'SiteController.index')
 
-Route.post('/validate', 'UrlController.validateUrl')
+Route.post('/shorten', 'UrlController.shortenUrl')
 
 Route.get('/:shorturl', 'UrlController.resolveShortUrl')
