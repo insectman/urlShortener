@@ -9,8 +9,8 @@ class ShortUrlForm extends React.Component {
 		this.state = {
 			requestPending : false,
 			urlIsChecked : false,
-			urlIsValid : false,
-			shortUrl : null
+			errorMessage : false,
+			shortUrl : false
 		}
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
@@ -24,8 +24,8 @@ class ShortUrlForm extends React.Component {
 		that.setState({
 			requestPending : true,
 			urlIsChecked : false,
-			urlIsValid : false,
-			shortUrl : null
+			errorMessage : false,
+			shortUrl : false
 		})
 
 		jQuery.post( "/shorten", { originalURL: that.shortURLInput.value, _csrf: jQuery('#root').data('csrf') }).done((resp) => {
@@ -33,7 +33,7 @@ class ShortUrlForm extends React.Component {
 			that.setState({
 				requestPending : false,
 				urlIsChecked : true,
-				urlIsValid : !resp.error,
+				errorMessage : resp.error,
 				shortUrl : !resp.error && resp.shortUrl
 			})
 		});
@@ -44,7 +44,8 @@ class ShortUrlForm extends React.Component {
 
 			<UrlFormRow 
 				urlIsChecked = {this.state.urlIsChecked }
-				urlIsValid = {this.state.urlIsValid}
+				errorMessage = {this.state.errorMessage}
+				requestPending = {this.state.requestPending}
 				shortURLInputRef = {el => { this.shortURLInput = el}}>
 			</UrlFormRow>
 			{ this.state.shortUrl && 
@@ -65,9 +66,9 @@ function UrlFormRow(props) {
 
 	return <li className="form-row">
 		{
-			(props.urlIsChecked && !props.urlIsValid) ? 
-			<label className = "label-error" htmlFor = "shortUrl">The URL you entered is invalid. try another one</label> :
-			<label htmlFor = "shortUrl">Shorten your URL</label>
+			(props.urlIsChecked && props.errorMessage) ? 
+			<label className = "label-error" htmlFor = "shortUrl">{'Error:'+props.errorMessage+'. Try another URL'}</label> :
+			<label htmlFor = "shortUrl">{this.state.requestPending ? 'Pending...' : 'Shorten your URL'}</label>
 		}
 		<input name = "shortUrl" ref={props.shortURLInputRef} placeholder="Type/paste your URL here"></input>
 	</li>
@@ -77,7 +78,7 @@ function UrlFormRow(props) {
 
 ReactDOM.render(
 	<div className="main-content">
-		<ShortUrlForm urlIsChecked = {false} urlIsValid = {false} shortUrl = ""></ShortUrlForm>
+		<ShortUrlForm shortUrl = ""></ShortUrlForm>
 	</div>,
   document.getElementById('root')
 );

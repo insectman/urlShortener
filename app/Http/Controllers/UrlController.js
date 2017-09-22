@@ -11,6 +11,7 @@ class UrlController {
 	* shortenUrl (request, response) {
 
 		const postData = request.post();
+		let urlValidated = false;
 
 		if(typeof postData.originalURL === 'undefined') {
 
@@ -29,16 +30,33 @@ class UrlController {
 
 		    	}
 
-		    	response.json({success : 1, shortUrl: 'qwerty'});
-				return;
+		    	urlValidated = true;
+		    	return;
 
 		    })
 		    .catch(function (err) {
 
-		        response.json({error: 'unable to resolve URL'});
+		        response.json({error: 'Unable to resolve URL'});
 				return;
 
-		    });
+		});
+
+		if(urlValidated) {
+
+			try {
+
+				const shortUrl = yield UrlpairHelper.createUrlPair(postData.originalURL);
+				response.json({success : 1, shortUrl});
+
+		    } 
+		    catch(e) {
+
+				response.json({error : 'internal error'});
+		    }
+			
+		}
+
+		
 
 		return;
 
