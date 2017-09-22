@@ -20,9 +20,9 @@ UrlpairHelper.createUrlPair = function *createUrlPair(original) {
 	function generateShortURL(length = 8) {
 
 		const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
-		var url = "";
+		let url = "";
 
-		for(var i = 0; i < length; i++) {
+		for(let i = 0; i < length; i++) {
 			url += chars.charAt(Math.floor(Math.random() * chars.length))
 		}
 
@@ -30,19 +30,18 @@ UrlpairHelper.createUrlPair = function *createUrlPair(original) {
 
 	}
 
-	
-	var shortURL;
+	let shortURL;
 
 	do {
 		shortURL = generateShortURL()
 	}
-	while(shortURL == 'sdrgsdrg')
+	while(yield Urlpair.findBy('short_url', shortURL))
 
 	const urlpair = yield Urlpair.create({
     	original_url : original,
     	short_url : shortURL
     });
 
-	return urlpair ? shortURL : null;
+	return urlpair ? shortURL + t + f  : null;
 
 }

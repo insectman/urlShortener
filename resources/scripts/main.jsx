@@ -29,14 +29,24 @@ class ShortUrlForm extends React.Component {
 		})
 
 		jQuery.post( "/shorten", { originalURL: that.shortURLInput.value, _csrf: jQuery('#root').data('csrf') }).done((resp) => {
-			console.log(resp);
+
 			that.setState({
 				requestPending : false,
 				urlIsChecked : true,
 				errorMessage : resp.error,
 				shortUrl : !resp.error && resp.shortUrl
 			})
-		});
+
+		}).fail(function(xhr, status, error) {
+
+	        that.setState({
+				requestPending : false,
+				urlIsChecked : false,
+				errorMessage : false,
+				shortUrl : false
+			})
+
+	    });;
 	}
 
 	render() {
@@ -68,7 +78,7 @@ function UrlFormRow(props) {
 		{
 			(props.urlIsChecked && props.errorMessage) ? 
 			<label className = "label-error" htmlFor = "shortUrl">{'Error:'+props.errorMessage+'. Try another URL'}</label> :
-			<label htmlFor = "shortUrl">{this.state.requestPending ? 'Pending...' : 'Shorten your URL'}</label>
+			<label htmlFor = "shortUrl">{props.requestPending ? 'Pending...' : 'Shorten your URL'}</label>
 		}
 		<input name = "shortUrl" ref={props.shortURLInputRef} placeholder="Type/paste your URL here"></input>
 	</li>

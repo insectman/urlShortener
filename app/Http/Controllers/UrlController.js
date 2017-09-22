@@ -1,6 +1,6 @@
 'use strict'
 
-const Urlpair = use('App/Model/Urlpair')
+const Urlpair = use('App/Model/Urlpair');
 
 const UrlpairHelper = require.main.require('./providers/UrlpairHelper');
 
@@ -53,12 +53,8 @@ class UrlController {
 
 				response.json({error : 'internal error'});
 		    }
-			
+
 		}
-
-		
-
-		return;
 
 	}
 
