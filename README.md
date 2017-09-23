@@ -5,32 +5,32 @@ By default, it uses MYSQL database. Database configuration can be altered in ./c
 Database credentials are set in .env file.
 Properties that you'll need are:
 
-DB_CONNECTION
-DB_HOST
-DB_PORT
-DB_USER
-DB_PASSWORD
-DB_DATABASE
+**DB_CONNECTION**
+**DB_HOST**
+**DB_PORT**
+**DB_USER**
+**DB_PASSWORD**
+**DB_DATABASE**
 
 run 'npm install' from the root dir to install all dependencies
 
 To perform migration, use the following command from the root dir:
 
-./ace migration:run
+**./ace migration:run**
 
-(for windows:)
-node ./ace migration:run
+(or for windows:)
+**node ./ace migration:run**
 
 Some app configuration is available at ./config/custom.js, 
 namely default lentgth for generated urls and default url storing time in seconds (before entry gets deleted)
 
 To run the app, use:
 
-npm run serve 
+**npm run serve**
 
 or 
 
-npm run serve:dev
+**npm run serve:dev**
 
 from the root dir.
 
@@ -69,7 +69,7 @@ In case of success, the object should also include 'shortUrl' key equal to short
 **Return**
 ``` json
 {
-  success : 1, 
-  shortUrl : https://yourcoolsite.com/2j45gf34
+  "success" : "1", 
+  "shortUrl" : "https://yourcoolsite.com/2j45gf34"
 }
 ```
