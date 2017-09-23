@@ -5,12 +5,12 @@ By default, it uses MYSQL database. Database configuration can be altered in ./c
 Database credentials are set in .env file.
 Properties that you'll need are:
 
-**DB_CONNECTION**
-**DB_HOST**
-**DB_PORT**
-**DB_USER**
-**DB_PASSWORD**
-**DB_DATABASE**
+- **DB_CONNECTION**
+- **DB_HOST**
+- **DB_PORT**
+- **DB_USER**
+- **DB_PASSWORD**
+- **DB_DATABASE**
 
 run 'npm install' from the root dir to install all dependencies
 
@@ -63,7 +63,7 @@ In case of success, the object should also include 'shortUrl' key equal to short
 ## Example
 **Request**
 
-    POST shorten?originalURL=ya.ru,shortURL=2j45gf34
+    POST shorten?originalURL=ya.ru&shortURL=2j45gf34
 
 
 **Return**
