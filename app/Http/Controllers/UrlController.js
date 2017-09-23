@@ -23,7 +23,10 @@ class UrlController {
 
 		if(typeof postData.originalURL === 'undefined') {
 
-			response.json({post: postData,error : 'Invalid input data'});
+			response.json({
+				error : 'Invalid input data',
+				success : 0
+			});
 			return;
 
 		}
@@ -38,7 +41,10 @@ class UrlController {
 		    		let errorText = 'Bad response status code:' + ValidationResponse.statusCode;
 
 		    		log.info('Error validating original url: ' + errorText);
-		    		return response.json({error : errorText});
+		    		return response.json({
+		    			error : errorText,
+		    			success : 0
+		    		});
 
 		    	}
 
@@ -49,7 +55,10 @@ class UrlController {
 		    .catch(function (err) {
 
 		    	log.warn('Error validating original url: ' + err);
-		        return response.json({error: 'Unable to resolve URL'});
+		        return response.json({
+		        	error: 'Unable to resolve URL',
+		        	success : 0
+		        });
 
 		});
 
@@ -65,12 +74,18 @@ class UrlController {
 					if(!UrlValidatorHelper.validateShortURL(userShortURL)) {
 
 						log.info('Invalid short url: ' + userShortURL);
-						return response.json({error : 'Invalid short url'});
+						return response.json({
+							error : 'Invalid short url',
+							success : 0
+						});
 					}
 					if(yield Urlpair.findBy('short_url', userShortURL)) {
 
 						log.info('User tried to add existing short url: ' + userShortURL);
-						return response.json({error : 'Suggested short url already exists'});
+						return response.json({
+							error : 'Suggested short url already exists',
+							success : 0
+						});
 
 					}
 				} 
@@ -79,7 +94,7 @@ class UrlController {
 
 				if(shortUrl) {
 
-					log.info('db entry created successfully for short url: ' + userShortURL);
+					log.info('db entry created successfully for short url: ' + shortUrl);
 
 					response.json({
 						success : 1, 
@@ -93,7 +108,10 @@ class UrlController {
 				else {
 
 					log.warn('Failed to create db entry for short url: ' + userShortURL);
-					return response.json({error : 'internal error'});
+					return response.json({
+						error : 'internal error',
+						success : 0
+					});
 				}
 
 		    } 
@@ -101,7 +119,10 @@ class UrlController {
 
 		    	log.error('Error creating short url db entry: ' + userShortURL);
 
-				return response.json({error : 'internal error'});
+				return response.json({
+					error : 'internal error',
+					success : 0
+				});
 		    }
 
 		    return;

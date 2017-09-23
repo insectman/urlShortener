@@ -1,35 +1,74 @@
-# AdonisJs Application
+## urlShortener is a very simple app that allows users to shorten their original urls and share shortened urls with other users.
 
-This repo is the pre-configured project structure to be used for creating ambitious web servers using AdonisJs.
+By default, it uses MYSQL database. Database configuration can be altered in ./config/database.js
 
-> Make sure to star the official [framework repo](https://github.com/adonisjs/adonis-framework) or [tweet on twitter](https://twitter.com/intent/tweet?url=http://adonisjs.com&text=I%20am%20using%20AdonisJs,%20a%20practical%20MVC%20framework%20for%20nodejs&hashtags=nodejs,adonisframework) :wave:
+Database credentials are set in .env file.
+Properties that you'll need are:
 
-## Story
+DB_CONNECTION
+DB_HOST
+DB_PORT
+DB_USER
+DB_PASSWORD
+DB_DATABASE
 
-One day a :boy: wanted to write a web application to slowly turn it into a business and make some :moneybag: for better living. Being a Javascript lover, he decided to go with Node.js. 
+run 'npm install' from the root dir to install all dependencies
 
-Hosting Node.js applications are cheap and offers lots of mordern programming concepts to build realtime data rich applications.
+To perform migration, use the following command from the root dir:
 
-He was so excited and full of energy to build this application and share it with the world. But soon his dreams started struggling with the amount of decisions he has to make, just to build an MVP of his idea. These decisions were not even related to the business and was about.
+./ace migration:run
 
-1. How should I structure my application?
-2. Why do I need to download 20 modules just to start an HTTP server, parse request body and upload files.
-3. How should I manage the authentication on website, and expose public API for others to interact with the data?
-4. What do I need to do to secure my application from web attacks and how to handle CORS?
-5. Why do I have ton of `require` statements everywhere?
-6. How the heck should I test my code? I am having hard time mocking dependencies.
-7. **WHY THE :fish:** there are no standards to write some code. Hell I am not going to write this application and going for a walk.
+(for windows:)
+node ./ace migration:run
+
+Some app configuration is available at ./config/custom.js, 
+namely default lentgth for generated urls and default url storing time in seconds (before entry gets deleted)
+
+To run the app, use:
+
+npm run serve 
+
+or 
+
+npm run serve:dev
+
+from the root dir.
 
 
-## Not Anymore
 
-This is so frustating. Node.js is a beautiful language but all of the above questions have never been answered together. We all love writing small concise modules but business are not created by downloading 20 modules.
+Amount of short url usage is stored in hit_count field od the 'urlpairs' table.
 
-Developers needs productive tools, so that they can focus on what matters, and not on downloading & finding the best ways to combine these small modules. 
+API for short url creation is represent by sole method:
 
-## AdonisJs
+# Shorten Method
 
-AdonisJs is a beautiful framework with pre-configured answers to all of your questions. We not only created this framework, but validated the features of framework with realtime problems and still improving every bit, so that you have to write less and structured code.
+	POST shorten
 
-This time a :boy: will write his ambitious application and will set the world on :fire:. Don't hesitate to work on your ideas and we promise to improve the framework every :sunny: and :first_quarter_moon_with_face: and YESSSS do not forget to star us on [:octocat:](https://github.com/adonisjs/adonis-framework)
+## Parameters
 
+### Mandatory attributes:
+
+- **originalURL** — URL to shorten
+
+### Optional attributes:
+
+- **shortURL** — suggested short URL
+
+## Return format
+A JSON-encoded object including 'error' and 'success' keys, where 'error' should be empty and 'success' should equal to 1.
+In case of success, the object should also include 'shortUrl' key equal to short url string
+
+
+
+## Example
+**Request**
+
+    POST shorten?originalURL=ya.ru,shortURL=2j45gf34
+
+
+**Return**
+``` json
+{
+  success : 1, 
+  shortUrl : https://yourcoolsite.com/2j45gf34
+}
