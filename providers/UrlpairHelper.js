@@ -28,8 +28,6 @@ UrlpairHelper.delayedDeletion = function * () {
 
 			const urlpair = yield Urlpair.find(urlpairData.id);
 
-
-
 			yield urlpair.delete()
 
 		}
@@ -50,7 +48,7 @@ UrlpairHelper.delayedDeletion = function * () {
 
 UrlpairHelper.createUrlPair = function * createUrlPair(original) {
 
-	function generateShortURL(length = 8) {
+	function generateShortURL(length = Config.get('custom.urlpair.strLength')) {
 
 		const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
 		let url = "";

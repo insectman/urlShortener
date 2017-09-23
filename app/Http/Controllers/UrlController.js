@@ -2,6 +2,8 @@
 
 const Urlpair = use('App/Model/Urlpair');
 
+const Env = use('Env');
+
 const UrlpairHelper = require.main.require('./providers/UrlpairHelper');
 
 const rp = require('request-promise');
@@ -49,7 +51,9 @@ class UrlController {
 
 				const count = (yield Urlpair.query().count())[0]["count(*)"];
 
-				const shortUrl = yield UrlpairHelper.createUrlPair(url);
+				const shortUrl =  request.hostname()
+								+ (Env.get('PORT') ? ':' + Env.get('PORT') : '')
+								+ '/' + (yield UrlpairHelper.createUrlPair(url));
 				if(shortUrl) {
 					response.json({success : 1, shortUrl});
 					if(!count) {
@@ -76,8 +80,28 @@ class UrlController {
 
 	* resolveShortUrl (request, response) {
 
-		
+		const shorturl = request.param('shorturl');
 
+		if(typeof shorturl === 'undefined') {
+
+			return response.redirect('/');
+
+		}
+
+		const urlpair = yield Urlpair.findBy('short_url', shorturl);
+
+		if(!urlpair) {
+
+			return response.redirect('/');
+
+		}
+
+		response.redirect(urlpair.original_url);
+
+		urlpair.hit_count++;
+		yield urlpair.save()
+
+		return;
 	}
 
 }
