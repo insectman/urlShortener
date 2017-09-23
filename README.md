@@ -72,3 +72,4 @@ In case of success, the object should also include 'shortUrl' key equal to short
   success : 1, 
   shortUrl : https://yourcoolsite.com/2j45gf34
 }
+```
