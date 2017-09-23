@@ -13,6 +13,13 @@ class ShortUrlForm extends React.Component {
 			shortUrl : false
 		}
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.selectShortURLOutput = this.selectShortURLOutput.bind(this);
+	}
+
+	selectShortURLOutput() {
+
+		this.shortURLOutput.select();
+
 	}
 
 	handleSubmit(event) {
@@ -61,7 +68,11 @@ class ShortUrlForm extends React.Component {
 			{ this.state.shortUrl && 
 			<li className="form-row">
 				<label>Your shortened URL. You can share it.</label>
-				<input value = {this.state.shortUrl}>
+				<input 
+					value = {this.state.shortUrl}
+					readOnly = {true}
+					onClick = {this.selectShortURLOutput}
+					ref = {el => { this.shortURLOutput = el}}>
 				</input>
 			</li> }
 			<li className="form-row">
