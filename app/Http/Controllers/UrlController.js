@@ -6,6 +6,8 @@ const Env = use('Env');
 
 const UrlpairHelper = require.main.require('./providers/UrlpairHelper');
 
+const UrlValidatorHelper = require.main.require('./providers/UrlValidatorHelper');
+
 const rp = require('request-promise');
 
 class UrlController {
@@ -54,7 +56,7 @@ class UrlController {
 				const userShortURL = postData.shortURL;
 
 				if(userShortURL) {
-					if(!UrlpairHelper.validateShortURL(userShortURL)) {
+					if(!UrlValidatorHelper.validateShortURL(userShortURL)) {
 						return response.json({error : 'Invalid short url'});
 					}
 					if(yield Urlpair.findBy('short_url', userShortURL)) {

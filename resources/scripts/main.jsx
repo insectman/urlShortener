@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import { validateShortURL } from '../../providers/UrlValidatorHelper';
 
 class ShortUrlForm extends React.Component {
 	
@@ -10,9 +11,12 @@ class ShortUrlForm extends React.Component {
 			requestPending : false,
 			urlIsChecked : false,
 			errorMessage : false,
-			shortUrl : false
+			shortUrl : false,
+			userShortUrl : ''
 		}
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.onShortUrlInpChange = this.onShortUrlInpChange.bind(this);
+		this.onClearBtnClick = this.onClearBtnClick.bind(this);
 		this.selectShortURL = this.selectShortURL.bind(this);
 	}
 
@@ -20,6 +24,24 @@ class ShortUrlForm extends React.Component {
 
 		this.shortURLInput.select();
 
+	}
+
+	onShortUrlInpChange(e) {
+
+		if(validateShortURL(e.target.value)) {
+			this.setState({...this.state, userShortUrl : e.target.value})
+		}
+
+	}
+
+	onClearBtnClick() {
+		this.setState({
+			requestPending : false,
+			urlIsChecked : false,
+			errorMessage : false,
+			shortUrl : false,
+			userShortUrl : ''
+		})
 	}
 
 	handleSubmit(event) {
@@ -68,7 +90,12 @@ class ShortUrlForm extends React.Component {
 
 		let shortUrlFormRowProps = {...this.state, 
 			selectShortURL : this.selectShortURL,
+			onShortUrlInpChange : this.onShortUrlInpChange,
 			ShortUrlInputRef : el => { this.shortURLInput = el}
+		}
+
+		let buttonRowProps = {...this.state, 
+			onClearBtnClick : this.onClearBtnClick
 		}
 
 		return <form className = {this.state.requestPending && "form-pending"} onSubmit = {this.handleSubmit} >
@@ -77,9 +104,8 @@ class ShortUrlForm extends React.Component {
 			</OriginalUrlFormRow>
 			<ShortUrlFormRow {...shortUrlFormRowProps} >
 			</ShortUrlFormRow>
-			<li className="form-row">
-				<button type="submit" disabled = {this.state.requestPending}>Submit</button>
-			</li>
+			<ButtonRow {...buttonRowProps}  >
+			</ButtonRow>
 		</form>
 	}
 
@@ -109,6 +135,10 @@ function ShortUrlFormRow(props) {
 	if(props.shortUrl) {
 		inpProps.value = props.shortUrl;
 	}
+	else {
+		inpProps.value = props.userShortUrl;
+		inpProps.onChange = props.onShortUrlInpChange;
+	}
 
 	return <li className="form-row">
 		<label>
@@ -117,6 +147,21 @@ function ShortUrlFormRow(props) {
 				: 'Enter your desired url or leave it blank to be generated randomly (alphanumeric characters only)'}
 		</label>
 		<input {...inpProps} ></input>
+	</li>
+
+}
+
+function ButtonRow(props) {
+	
+	return <li className="form-row">
+		{
+		!props.shortUrl && !props.requestPending && 
+		<button type="submit">Submit</button>
+		}
+		{
+		props.shortUrl &&
+		<button onClick = {props.onClearBtnClick}>Clear</button>
+		}
 	</li>
 
 }

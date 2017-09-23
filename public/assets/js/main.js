@@ -21242,6 +21242,18 @@ module.exports = require('./lib/React');
 },{"./lib/React":161}],185:[function(require,module,exports){
 'use strict';
 
+var UrlValidatorHelper = exports = module.exports = {};
+
+UrlValidatorHelper.validateShortURL = function (string) {
+
+	var regexp = new RegExp('^[A-z1-9]{1,}$', 'i');
+
+	return !!string.match(regexp);
+};
+
+},{}],186:[function(require,module,exports){
+'use strict';
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21253,6 +21265,8 @@ var _react2 = _interopRequireDefault(_react);
 var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _UrlValidatorHelper = require('../../providers/UrlValidatorHelper');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21274,9 +21288,12 @@ var ShortUrlForm = function (_React$Component) {
 			requestPending: false,
 			urlIsChecked: false,
 			errorMessage: false,
-			shortUrl: false
+			shortUrl: false,
+			userShortUrl: ''
 		};
 		_this.handleSubmit = _this.handleSubmit.bind(_this);
+		_this.onShortUrlInpChange = _this.onShortUrlInpChange.bind(_this);
+		_this.onClearBtnClick = _this.onClearBtnClick.bind(_this);
 		_this.selectShortURL = _this.selectShortURL.bind(_this);
 		return _this;
 	}
@@ -21286,6 +21303,25 @@ var ShortUrlForm = function (_React$Component) {
 		value: function selectShortURL() {
 
 			this.shortURLInput.select();
+		}
+	}, {
+		key: 'onShortUrlInpChange',
+		value: function onShortUrlInpChange(e) {
+
+			if ((0, _UrlValidatorHelper.validateShortURL)(e.target.value)) {
+				this.setState(_extends({}, this.state, { userShortUrl: e.target.value }));
+			}
+		}
+	}, {
+		key: 'onClearBtnClick',
+		value: function onClearBtnClick() {
+			this.setState({
+				requestPending: false,
+				urlIsChecked: false,
+				errorMessage: false,
+				shortUrl: false,
+				userShortUrl: ''
+			});
 		}
 	}, {
 		key: 'handleSubmit',
@@ -21337,9 +21373,14 @@ var ShortUrlForm = function (_React$Component) {
 
 			var shortUrlFormRowProps = _extends({}, this.state, {
 				selectShortURL: this.selectShortURL,
+				onShortUrlInpChange: this.onShortUrlInpChange,
 				ShortUrlInputRef: function ShortUrlInputRef(el) {
 					_this2.shortURLInput = el;
 				}
+			});
+
+			var buttonRowProps = _extends({}, this.state, {
+				onClearBtnClick: this.onClearBtnClick
 			});
 
 			return _react2.default.createElement(
@@ -21347,15 +21388,7 @@ var ShortUrlForm = function (_React$Component) {
 				{ className: this.state.requestPending && "form-pending", onSubmit: this.handleSubmit },
 				_react2.default.createElement(OriginalUrlFormRow, originalUrlFormProps),
 				_react2.default.createElement(ShortUrlFormRow, shortUrlFormRowProps),
-				_react2.default.createElement(
-					'li',
-					{ className: 'form-row' },
-					_react2.default.createElement(
-						'button',
-						{ type: 'submit', disabled: this.state.requestPending },
-						'Submit'
-					)
-				)
+				_react2.default.createElement(ButtonRow, buttonRowProps)
 			);
 		}
 	}]);
@@ -21391,6 +21424,9 @@ function ShortUrlFormRow(props) {
 
 	if (props.shortUrl) {
 		inpProps.value = props.shortUrl;
+	} else {
+		inpProps.value = props.userShortUrl;
+		inpProps.onChange = props.onShortUrlInpChange;
 	}
 
 	return _react2.default.createElement(
@@ -21405,10 +21441,28 @@ function ShortUrlFormRow(props) {
 	);
 }
 
+function ButtonRow(props) {
+
+	return _react2.default.createElement(
+		'li',
+		{ className: 'form-row' },
+		!props.shortUrl && !props.requestPending && _react2.default.createElement(
+			'button',
+			{ type: 'submit' },
+			'Submit'
+		),
+		props.shortUrl && _react2.default.createElement(
+			'button',
+			{ onClick: props.onClearBtnClick },
+			'Clear'
+		)
+	);
+}
+
 _reactDom2.default.render(_react2.default.createElement(
 	'div',
 	{ className: 'main-content' },
 	_react2.default.createElement(ShortUrlForm, { shortUrl: '' })
 ), document.getElementById('root'));
 
-},{"react":184,"react-dom":32}]},{},[185]);
+},{"../../providers/UrlValidatorHelper":185,"react":184,"react-dom":32}]},{},[186]);

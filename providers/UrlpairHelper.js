@@ -4,13 +4,6 @@ const Urlpair = use('App/Model/Urlpair')
 
 const UrlpairHelper = exports = module.exports = {}
 
-UrlpairHelper.validateShortURL = function(string) {
-
-	const regexp = new RegExp('^[A-z1-9]{1,}$', 'i');
-
-	return !!string.match(regexp);
-}
-
 UrlpairHelper.delayedDeletion = function * () {
 
 	const storeTime = Config.get('custom.urlpair.storeTime')
