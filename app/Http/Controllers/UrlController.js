@@ -20,7 +20,9 @@ class UrlController {
 
 		}
 
-		yield rp({url: postData.originalURL, followRedirect: true, simple: true, resolveWithFullResponse: true})
+		const url = (postData.originalURL.indexOf('://') === -1) ? 'http://' + postData.originalURL : postData.originalURL;
+
+		yield rp({url, followRedirect: true, simple: true, resolveWithFullResponse: true})
 		    .then(function (ValidationResponse) {
 
 		    	if(ValidationResponse.statusCode.toString()[0] !== '2') {
@@ -47,7 +49,7 @@ class UrlController {
 
 				const count = (yield Urlpair.query().count())[0]["count(*)"];
 
-				const shortUrl = yield UrlpairHelper.createUrlPair(postData.originalURL);
+				const shortUrl = yield UrlpairHelper.createUrlPair(url);
 				if(shortUrl) {
 					response.json({success : 1, shortUrl});
 					if(!count) {
