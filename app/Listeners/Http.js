@@ -2,6 +2,7 @@
 
 const Env = use('Env')
 const Youch = use('youch')
+const UrlpairHelper = require.main.require('./providers/UrlpairHelper')
 const Http = exports = module.exports = {}
 
 /**
@@ -37,5 +38,8 @@ Http.handleError = function * (error, request, response) {
  * listener for Http.start event, emitted after
  * starting http server.
  */
-Http.onStart = function () {
+Http.onStart = function * () {
+
+  yield UrlpairHelper.delayedDeletion();
+
 }

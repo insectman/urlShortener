@@ -41,8 +41,8 @@ class ShortUrlForm extends React.Component {
 
 	        that.setState({
 				requestPending : false,
-				urlIsChecked : false,
-				errorMessage : false,
+				urlIsChecked : true,
+				errorMessage : 'Internal error',
 				shortUrl : false
 			})
 

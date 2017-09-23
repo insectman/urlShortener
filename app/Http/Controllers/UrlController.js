@@ -45,14 +45,28 @@ class UrlController {
 
 			try {
 
+				const count = (yield Urlpair.query().count())[0]["count(*)"];
+
 				const shortUrl = yield UrlpairHelper.createUrlPair(postData.originalURL);
-				response.json({success : 1, shortUrl});
+				if(shortUrl) {
+					response.json({success : 1, shortUrl});
+					if(!count) {
+						yield UrlpairHelper.delayedDeletion();
+					}
+				}
+				else {
+					response.json({error : 'internal error'});
+				}
 
 		    } 
 		    catch(e) {
 
+		    	//console.log(e)
+
 				response.json({error : 'internal error'});
 		    }
+
+		    return;
 
 		}
 
