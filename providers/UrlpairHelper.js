@@ -4,6 +4,10 @@ const Urlpair = use('App/Model/Urlpair')
 
 const UrlpairHelper = exports = module.exports = {}
 
+const CatLog = require('cat-log')
+
+const log = new CatLog()
+
 UrlpairHelper.delayedDeletion = function * () {
 
 	const storeTime = Config.get('custom.urlpair.storeTime')
@@ -15,7 +19,7 @@ UrlpairHelper.delayedDeletion = function * () {
 		try {
 
 			let queryResult = yield Database
-				.raw('select id, now() - created_at as age from urlpairs order by created_at asc limit 0,1')
+				.raw('select id, short_url, now() - created_at as age from urlpairs order by created_at asc limit 0,1')
 
 			urlpairData = queryResult.length && queryResult[0].length && queryResult[0][0];
 
@@ -30,10 +34,12 @@ UrlpairHelper.delayedDeletion = function * () {
 
 			yield urlpair.delete()
 
+			log.info('Short url deleted from db: ' + urlpairData.short_url);
+
 		}
 		catch(e) {
 
-			//console.log(e)
+			log.error('Failed to schedule short url deletion: ' + e + ',waiting 5 seconds...');
 
 			yield new Promise(resolve => setTimeout(()=>resolve(), 5000))
 

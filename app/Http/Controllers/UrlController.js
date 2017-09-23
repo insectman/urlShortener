@@ -10,6 +10,10 @@ const UrlValidatorHelper = require.main.require('./providers/UrlValidatorHelper'
 
 const rp = require('request-promise');
 
+const CatLog = require('cat-log')
+
+const log = new CatLog()
+
 class UrlController {
 
 	* shortenUrl (request, response) {
@@ -31,8 +35,10 @@ class UrlController {
 
 		    	if(ValidationResponse.statusCode.toString()[0] !== '2') {
 
-		    		response.json({error : 'Bad response status code:' + ValidationResponse.statusCode});
-					return;
+		    		let errorText = 'Bad response status code:' + ValidationResponse.statusCode;
+
+		    		log.info('Error validating original url: ' + errorText);
+		    		return response.json({error : errorText});
 
 		    	}
 
@@ -42,8 +48,8 @@ class UrlController {
 		    })
 		    .catch(function (err) {
 
-		        response.json({error: 'Unable to resolve URL'});
-				return;
+		    	log.warn('Error validating original url: ' + err);
+		        return response.json({error: 'Unable to resolve URL'});
 
 		});
 
@@ -57,16 +63,23 @@ class UrlController {
 
 				if(userShortURL) {
 					if(!UrlValidatorHelper.validateShortURL(userShortURL)) {
+
+						log.info('Invalid short url: ' + userShortURL);
 						return response.json({error : 'Invalid short url'});
 					}
 					if(yield Urlpair.findBy('short_url', userShortURL)) {
+
+						log.info('User tried to add existing short url: ' + userShortURL);
 						return response.json({error : 'Suggested short url already exists'});
+
 					}
 				} 
 
 				const shortUrl = (yield UrlpairHelper.createUrlPair(originalUrl, userShortURL));
 
 				if(shortUrl) {
+
+					log.info('db entry created successfully for short url: ' + userShortURL);
 
 					response.json({
 						success : 1, 
@@ -78,13 +91,15 @@ class UrlController {
 					}
 				}
 				else {
+
+					log.warn('Failed to create db entry for short url: ' + userShortURL);
 					return response.json({error : 'internal error'});
 				}
 
 		    } 
 		    catch(e) {
 
-		    	//console.log(e)
+		    	log.error('Error creating short url db entry: ' + userShortURL);
 
 				return response.json({error : 'internal error'});
 		    }
@@ -109,6 +124,7 @@ class UrlController {
 
 		if(!urlpair) {
 
+			log.info('Trying to resolve short url that doesn\'t exist in db: ' + shorturl);
 			return response.redirect('/');
 
 		}
@@ -116,6 +132,8 @@ class UrlController {
 		response.redirect(urlpair.original_url);
 
 		urlpair.hit_count++;
+
+		log.info('Short url resolved successfully: ' + shorturl + ', hit count: ' + urlpair.hit_count);
 		yield urlpair.save()
 
 		return;
