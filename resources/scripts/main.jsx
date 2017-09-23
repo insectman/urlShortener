@@ -13,12 +13,12 @@ class ShortUrlForm extends React.Component {
 			shortUrl : false
 		}
 		this.handleSubmit = this.handleSubmit.bind(this);
-		this.selectShortURLOutput = this.selectShortURLOutput.bind(this);
+		this.selectShortURL = this.selectShortURL.bind(this);
 	}
 
-	selectShortURLOutput() {
+	selectShortURL() {
 
-		this.shortURLOutput.select();
+		this.shortURLInput.select();
 
 	}
 
@@ -35,7 +35,11 @@ class ShortUrlForm extends React.Component {
 			shortUrl : false
 		})
 
-		jQuery.post( "/shorten", { originalURL: that.shortURLInput.value, _csrf: jQuery('#root').data('csrf') }).done((resp) => {
+		jQuery.post( "/shorten", { 
+			originalURL: that.OriginalURLInput.value, 
+			shortURL: that.shortURLInput.value,
+			_csrf: jQuery('#root').data('csrf') 
+			}).done((resp) => {
 
 			that.setState({
 				requestPending : false,
@@ -57,24 +61,22 @@ class ShortUrlForm extends React.Component {
 	}
 
 	render() {
+
+		let originalUrlFormProps = {...this.state, 
+			OriginalUrlInputRef : el => { this.OriginalURLInput = el}
+		}
+
+		let shortUrlFormRowProps = {...this.state, 
+			selectShortURL : this.selectShortURL,
+			ShortUrlInputRef : el => { this.shortURLInput = el}
+		}
+
 		return <form className = {this.state.requestPending && "form-pending"} onSubmit = {this.handleSubmit} >
 
-			<UrlFormRow 
-				urlIsChecked = {this.state.urlIsChecked }
-				errorMessage = {this.state.errorMessage}
-				requestPending = {this.state.requestPending}
-				shortURLInputRef = {el => { this.shortURLInput = el}}>
-			</UrlFormRow>
-			{ this.state.shortUrl && 
-			<li className="form-row">
-				<label>Your shortened URL. You can share it.</label>
-				<input 
-					value = {this.state.shortUrl}
-					readOnly = {true}
-					onClick = {this.selectShortURLOutput}
-					ref = {el => { this.shortURLOutput = el}}>
-				</input>
-			</li> }
+			<OriginalUrlFormRow {...originalUrlFormProps} >
+			</OriginalUrlFormRow>
+			<ShortUrlFormRow {...shortUrlFormRowProps} >
+			</ShortUrlFormRow>
 			<li className="form-row">
 				<button type="submit" disabled = {this.state.requestPending}>Submit</button>
 			</li>
@@ -83,7 +85,7 @@ class ShortUrlForm extends React.Component {
 
 }
 
-function UrlFormRow(props) {
+function OriginalUrlFormRow(props) {
 
 	return <li className="form-row">
 		{
@@ -91,11 +93,33 @@ function UrlFormRow(props) {
 			<label className = "label-error" htmlFor = "shortUrl">{'Error:'+props.errorMessage+'. Try another URL'}</label> :
 			<label htmlFor = "shortUrl">{props.requestPending ? 'Pending...' : 'Shorten your URL'}</label>
 		}
-		<input name = "shortUrl" ref={props.shortURLInputRef} placeholder="Type/paste your URL here"></input>
+		<input name = "shortUrl" ref={props.OriginalUrlInputRef} placeholder="Type/paste your URL here"></input>
 	</li>
 
 }
 
+function ShortUrlFormRow(props) {
+
+	let inpProps = {
+		readOnly : !!props.shortUrl,
+		onClick : props.shortUrl && props.selectShortURL,
+		ref : props.ShortUrlInputRef
+	}
+
+	if(props.shortUrl) {
+		inpProps.value = props.shortUrl;
+	}
+
+	return <li className="form-row">
+		<label>
+			{ props.shortUrl ? 
+				'Your shortened URL. You can share it.' 
+				: 'Enter your desired url or leave it blank to be generated randomly (alphanumeric characters only)'}
+		</label>
+		<input {...inpProps} ></input>
+	</li>
+
+}
 
 ReactDOM.render(
 	<div className="main-content">

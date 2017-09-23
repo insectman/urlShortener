@@ -22,9 +22,9 @@ class UrlController {
 
 		}
 
-		const url = (postData.originalURL.indexOf('://') === -1) ? 'http://' + postData.originalURL : postData.originalURL;
+		const originalUrl = (postData.originalURL.indexOf('://') === -1) ? 'http://' + postData.originalURL : postData.originalURL;
 
-		yield rp({url, followRedirect: true, simple: true, resolveWithFullResponse: true})
+		yield rp({url: originalUrl, followRedirect: true, simple: true, resolveWithFullResponse: true})
 		    .then(function (ValidationResponse) {
 
 		    	if(ValidationResponse.statusCode.toString()[0] !== '2') {
@@ -51,17 +51,32 @@ class UrlController {
 
 				const count = (yield Urlpair.query().count())[0]["count(*)"];
 
-				const shortUrl =  request.hostname()
-								+ (Env.get('PORT') ? ':' + Env.get('PORT') : '')
-								+ '/' + (yield UrlpairHelper.createUrlPair(url));
+				const userShortURL = postData.shortURL;
+
+				if(userShortURL) {
+					if(!UrlpairHelper.validateShortURL(userShortURL)) {
+						return response.json({error : 'Invalid short url'});
+					}
+					if(yield Urlpair.findBy('short_url', userShortURL)) {
+						return response.json({error : 'Suggested short url already exists'});
+					}
+				} 
+
+				const shortUrl = (yield UrlpairHelper.createUrlPair(originalUrl, userShortURL));
+
 				if(shortUrl) {
-					response.json({success : 1, shortUrl});
+
+					response.json({
+						success : 1, 
+						shortUrl : request.hostname() + (Env.get('PORT') ? ':' + Env.get('PORT') : '')+ '/' + shortUrl
+					});
+
 					if(!count) {
 						yield UrlpairHelper.delayedDeletion();
 					}
 				}
 				else {
-					response.json({error : 'internal error'});
+					return response.json({error : 'internal error'});
 				}
 
 		    } 
@@ -69,7 +84,7 @@ class UrlController {
 
 		    	//console.log(e)
 
-				response.json({error : 'internal error'});
+				return response.json({error : 'internal error'});
 		    }
 
 		    return;

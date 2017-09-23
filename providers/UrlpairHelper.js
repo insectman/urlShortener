@@ -4,6 +4,13 @@ const Urlpair = use('App/Model/Urlpair')
 
 const UrlpairHelper = exports = module.exports = {}
 
+UrlpairHelper.validateShortURL = function(string) {
+
+	const regexp = new RegExp('^[A-z1-9]{1,}$', 'i');
+
+	return !!string.match(regexp);
+}
+
 UrlpairHelper.delayedDeletion = function * () {
 
 	const storeTime = Config.get('custom.urlpair.storeTime')
@@ -46,11 +53,11 @@ UrlpairHelper.delayedDeletion = function * () {
 
 }
 
-UrlpairHelper.createUrlPair = function * createUrlPair(original) {
+UrlpairHelper.createUrlPair = function * createUrlPair(original, shortURL = null) {
 
 	function generateShortURL(length = Config.get('custom.urlpair.strLength')) {
 
-		const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+		const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		let url = "";
 
 		for(let i = 0; i < length; i++) {
@@ -61,12 +68,14 @@ UrlpairHelper.createUrlPair = function * createUrlPair(original) {
 
 	}
 
-	let shortURL;
+	if(!shortURL) {
 
-	do {
-		shortURL = generateShortURL()
+		do {
+			shortURL = generateShortURL()
+		}
+		while(yield Urlpair.findBy('short_url', shortURL));
+
 	}
-	while(yield Urlpair.findBy('short_url', shortURL));
 
 	const urlpair = yield Urlpair.create({
     	original_url : original,
