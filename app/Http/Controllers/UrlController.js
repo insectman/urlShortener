@@ -1,5 +1,7 @@
 'use strict'
 
+const Config = use('Config')
+
 const Urlpair = use('App/Model/Urlpair');
 
 const Env = use('Env');
@@ -96,9 +98,20 @@ class UrlController {
 
 					log.info('db entry created successfully for short url: ' + shortUrl);
 
+					let finalUrl = request.hostname();
+
+					if(Config.get('custom.urlpair.addPortToURL') && Env.get('PORT')) {
+
+						finalUrl += ':' + Env.get('PORT');
+
+					}
+
+					finalUrl += '/' + shortUrl;
+					
+
 					response.json({
 						success : 1, 
-						shortUrl : request.hostname() + (Env.get('PORT') ? ':' + Env.get('PORT') : '')+ '/' + shortUrl
+						shortUrl : finalUrl
 					});
 
 					if(!count) {
